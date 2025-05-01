@@ -37,6 +37,9 @@ class CrearProductoActivity : AppCompatActivity() {
     // VARIABLE PARA ALMACENAR LA RUTA ABSOLUTA DEL ARCHIVO DE LA FOTO ACTUALMENTE CAPTURADAº
     private var currentPhotoPath: String? = null
 
+    // VARIABLE PARA ALMACENAR LA LISTA DE SUPERMERCADOS
+    private var listaSupermercados: List<String> = emptyList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProductoNuevoBinding.inflate(layoutInflater)
@@ -57,6 +60,9 @@ class CrearProductoActivity : AppCompatActivity() {
             // CREAMOS UNA COPIA MUTABLE DE LA LISTA DE SUPERMERCADOS Y LE AÑADIMOS LA OPCION Nuevo
             val supermercadosConNuevo = supermercados.toMutableList()
             supermercadosConNuevo.add("Nuevo")
+
+            // GUARDAMOS LA LISTA PARA USARLA DESPUES
+            listaSupermercados = supermercados
 
             // CREA UN ADAPTADOR PARA EL SPINNER CON LA LISTA DE SUPERMERCADOS Y LO ASIGNAMOS AL Spinner
             val adapter = ArrayAdapter(
@@ -196,14 +202,24 @@ class CrearProductoActivity : AppCompatActivity() {
         // SI EL CAMPO PARA INGRESAR UN NUEVO SUPERMERCADO ES VISIBLE
         if (binding.tilNuevoSupermercado.visibility == View.VISIBLE) {
             // OBTIENE EL TEXTO INGRESADO EN EL CAMPO DE NUEVO SUPERMERCADO Y ELIMINA ESPACIOS EN BLANCO
-            supermercado = binding.etNuevoSupermercado.text.toString().trim()
+            val nuevoSupermercado = binding.etNuevoSupermercado.text.toString().trim()
             // SI EL CAMPO DE NUEVO SUPERMERCADO ESTÁ VACÍO
-            if (supermercado.isEmpty()) {
+            if (nuevoSupermercado.isEmpty()) {
                 // MUESTRA UN TOAST PIDIENDO AL USUARIO QUE INGRESE EL NUEVO SUPERMERCADO Y SALE DE LA FUNCIÓN
                 Toast.makeText(this, "Por favor, ingresa el nuevo supermercado", Toast.LENGTH_SHORT)
                     .show()
                 return
             }
+            // VERIFICAR SI EL SUPERMERCADO YA EXISTE
+            if (listaSupermercados.contains(nuevoSupermercado)) {
+                Toast.makeText(
+                    this,
+                    "El supermercado '$nuevoSupermercado' ya existe. Por favor, selecciónalo de la lista.",
+                    Toast.LENGTH_LONG
+                ).show()
+                return
+            }
+            supermercado = nuevoSupermercado
         } else {
             // SI EL CAMPO DE NUEVO SUPERMERCADO NO ESTÁ VISIBLE, SE HA SELECCIONADO UN SUPERMERCADO DEL SPINNER
             supermercado = binding.spSupermercado.selectedItem as? String ?: ""
@@ -215,7 +231,6 @@ class CrearProductoActivity : AppCompatActivity() {
                 return
             }
         }
-
         // SI EL CAMPO DE NOMBRE O PRECIO ESTÁ VACÍO
         if (nombre.isEmpty() || precioStr.isEmpty()) {
             // MUESTRA UN TOAST PIDIENDO AL USUARIO QUE COMPLETE EL NOMBRE Y EL PRECIO Y SALE DE LA FUNCIÓN

@@ -3,6 +3,7 @@ package com.example.compraapp
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -36,6 +37,11 @@ class MainActivity : AppCompatActivity(), ProductoAdapter.OnProductoEliminarClic
         binding.fabCrearProducto.setOnClickListener {
             val intent = Intent(this,CrearProductoActivity::class.java)
             startActivity(intent)
+        }
+
+        // LISTENER DEL BOTON PARA ORDENAR POR SUPERMERCADOS
+        binding.btnOrdenarPorSupermercado.setOnClickListener {
+            mostrarListaDeSupermercados()
         }
     }
 
@@ -87,5 +93,46 @@ class MainActivity : AppCompatActivity(), ProductoAdapter.OnProductoEliminarClic
         // SI NO HICIESE PRODUCTO Parcelable, TENDRIA QUE PASAR LOS ATRIBUTOS UNO A UNO.
         intent.putExtra("producto", producto)
         startActivity(intent)
+    }
+
+    // FUNCION PARA MOSTRAR LA LISTA DE LOS SUPERMERCADOS
+    private fun mostrarListaDeSupermercados() {
+        productoViewModel.supermercadosList.observe(this) { supermercados ->
+            val supermercadosConTodos = supermercados.toMutableList()
+            supermercadosConTodos.add(0, "Todos") // Añadimos la opción "Todos" al inicio
+            val supermercadosArray = supermercadosConTodos.toTypedArray()
+
+            // CONVERTIMOS A TypedArray PORQUE AlertDialog.Builder.setItems LO REQUIERE
+            AlertDialog.Builder(this)
+                .setTitle("Seleccionar Supermercado")
+                .setItems(supermercadosArray) { dialog, selectedIndex ->
+                    val supermercadoSeleccionado = supermercadosArray[selectedIndex]
+                    ordenarProductosPorSupermercado(supermercadoSeleccionado)
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancelar") { dialog, _ ->
+                    dialog.cancel()
+                }
+                .show()
+        }
+    }
+
+    // AÑADIMOS ESTA FUNCIÓN PARA ORDENAR LOS PRODUCTOS POR SUPERMERCADO
+    private fun ordenarProductosPorSupermercado(supermercado: String) {
+        // TENEMOS QUE ESCUCHAR LA LISTA DE PRODUCTOS PARA CUANDO SE AÑADE UNO NUEVO
+        productoViewModel.allProductos.observe(this) { productos ->
+            // SI HA SELECCIONADO "Todos" DEVOLVEMOS LA LISTA DE SERIE SIN ORGANIZARLA
+            val productosOrdenados = if (supermercado == "Todos") {
+                productos
+            } else {
+                // SI HA SELECCIONADO UN SUPERMERCADO, LO ORDENAMOS USANDOLO (PARAMETRO supermercado)
+                productos.sortedWith(compareBy {
+                    // EL VALOR 0 INDICA QUE SE MUESTRA PRIMERO
+                    if (it.supermercado == supermercado) 0 else 1
+                })
+            }
+            // ACTUALIZAMOS LA LISTA DE PRODUCTOS EN EL ADAPTADOR PARA QUE SE MUESTREN ORDENADOS
+            productoAdapter.actualizarLista(productosOrdenados)
+        }
     }
 }

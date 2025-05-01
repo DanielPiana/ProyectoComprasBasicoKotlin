@@ -43,6 +43,10 @@ class EditarProductoActivity : AppCompatActivity() {
 
     // VARIABLE PARA EL ADAPTADOR DEL SPINNER
     private lateinit var supermercadoAdapter: ArrayAdapter<String>
+
+    // VARIABLE PARA ALMACENAR LA LISTA DE SUPERMERCADOS
+    private var listaSupermercados: List<String> = emptyList()
+
     // MÉTODO LLAMADO CUANDO SE CREA LA ACTIVIDAD
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,24 +61,28 @@ class EditarProductoActivity : AppCompatActivity() {
         // OBTIENE EL OBJETO Producto PASADO A TRAVÉS DEL INTENT
         productoAEditar = intent.getParcelableExtra("producto")
 
-        // Inicializa el adaptador del Spinner
+        // INICIALIZAMOS LA LISTA DE ITEMS QUE VA A TENER EL SPINNER
         supermercadoAdapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,
-            mutableListOf("Nuevo") // Inicializamos con "Nuevo"
+            mutableListOf("Nuevo")
         )
         binding.spSupermercado.adapter = supermercadoAdapter
 
-        // Configura el listener del Spinner
+        // CONFIGURACION DEL LISTENER DEL SPINNER
         binding.spSupermercado.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
+
+                // MÉTODO LLAMADO CUANDO SE SELECCIONA UN ITEM DEL SPINNER
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
                     view: View?,
                     position: Int,
                     id: Long
                 ) {
+                    // OBTENEMOS EL ITEM SELECCIONADO COMO String
                     val selectedItem = parent?.getItemAtPosition(position) as? String
+                    // SI SE HA SELECCIONADO Nuevo, HACEMOS VISIBLE EL CAMPO PARA ESCRIBIR EL NUEVO SUPERMERCADO
                     if (selectedItem == "Nuevo") {
                         binding.tilNuevoSupermercado.visibility = View.VISIBLE
                     } else {
@@ -82,8 +90,9 @@ class EditarProductoActivity : AppCompatActivity() {
                     }
                 }
 
+                // MÉTODO LLAMADO CUANDO NO SE SELECCIONA NADA
                 override fun onNothingSelected(parent: AdapterView<*>?) {
-                    // No hacer nada
+                   // LO PONEMOS POR OBLIGACION
                 }
             }
 
@@ -95,6 +104,7 @@ class EditarProductoActivity : AppCompatActivity() {
             supermercadoAdapter.clear()
             supermercadoAdapter.addAll(supermercadosConNuevo)
             supermercadoAdapter.notifyDataSetChanged()
+            listaSupermercados = supermercados // Guardar la lista de supermercados
 
             // Si ya tenemos el producto a editar, intenta seleccionar el supermercado
             productoAEditar?.let { producto ->
@@ -102,7 +112,7 @@ class EditarProductoActivity : AppCompatActivity() {
             }
         }
 
-        // Llama a la función para inicializar la UI con los datos del producto
+        // LLAMA A LA FUNCION PARA INICIALIZAR LA UI CON LOS DATOS DEL PRODUCTO
         productoAEditar?.let { producto ->
             inicializarUIConProducto(producto)
         }
@@ -137,12 +147,13 @@ class EditarProductoActivity : AppCompatActivity() {
         seleccionarSupermercadoEnSpinner(producto.supermercado)
     }
 
+    // METODO PARA SETEAR EL SUPERMERCADO DEL PRODUCTO EN EL SPINNER
     private fun seleccionarSupermercadoEnSpinner(supermercado: String) {
+        // OBTENEMOS EL INDICE DEL SUPERMERCADO EN EL SPINNER
         val index = supermercadoAdapter.getPosition(supermercado)
-        if (index != -1) {
+        if (index != -1) { // SI EXISTE
             binding.spSupermercado.setSelection(index)
-        } else {
-            // Si el supermercado no está en la lista, selecciona "Nuevo" y muestra el campo
+        } else { // SI NO EXISTE
             val nuevoIndex = supermercadoAdapter.getPosition("Nuevo")
             if (nuevoIndex != -1) {
                 binding.spSupermercado.setSelection(nuevoIndex)
@@ -249,14 +260,24 @@ class EditarProductoActivity : AppCompatActivity() {
         // SI EL CAMPO PARA INGRESAR UN NUEVO SUPERMERCADO ES VISIBLE
         if (binding.tilNuevoSupermercado.visibility == View.VISIBLE) {
             // OBTIENE EL TEXTO DEL NUEVO SUPERMERCADO Y ELIMINA ESPACIOS EN BLANCO
-            supermercado = binding.etNuevoSupermercado.text.toString().trim()
+            val nuevoSupermercado = binding.etNuevoSupermercado.text.toString().trim()
             // SI EL CAMPO DE NUEVO SUPERMERCADO ESTÁ VACÍO
-            if (supermercado.isEmpty()) {
+            if (nuevoSupermercado.isEmpty()) {
                 // MUESTRA UN TOAST PIDIENDO INGRESAR EL NUEVO SUPERMERCADO Y SALE
                 Toast.makeText(this, "Por favor, ingresa el nuevo supermercado", Toast.LENGTH_SHORT)
                     .show()
                 return
             }
+            // VERIFICAR SI EL SUPERMERCADO YA EXISTE
+            if (listaSupermercados.contains(nuevoSupermercado)) {
+                Toast.makeText(
+                    this,
+                    "El supermercado '$nuevoSupermercado' ya existe. Por favor, selecciónalo de la lista.",
+                    Toast.LENGTH_LONG
+                ).show()
+                return
+            }
+            supermercado = nuevoSupermercado
         } else {
             // SI EL CAMPO DE NUEVO SUPERMERCADO NO ESTÁ VISIBLE, SE SELECCIONÓ DEL SPINNER
             supermercado = binding.spSupermercado.selectedItem as? String ?: ""
