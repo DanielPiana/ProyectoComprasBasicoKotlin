@@ -1,86 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="8dp">
 
         <ImageView
             android:id="@+id/ivFotoProducto"
             android:layout_width="100dp"
             android:layout_height="100dp"
             tools:background="@color/black"
+            android:scaleType="centerCrop"
+            android:padding="2dp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <TextView
             android:id="@+id/tvNombreProducto"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools:text="tvNombreProducto"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ivFotoProducto"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="48dp"
             android:textSize="21sp"
             android:textStyle="bold"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/ivFotoProducto"
+            app:layout_constraintTop_toTopOf="@id/ivFotoProducto"
+            app:layout_constraintEnd_toStartOf="@id/ibEditarProducto"/>
 
         <TextView
             android:id="@+id/tvSupermercado"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             tools:text="tvSupermercado"
-            app:layout_constraintTop_toBottomOf="@+id/tvNombreProducto"
-            app:layout_constraintStart_toEndOf="@+id/ivFotoProducto"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="4dp"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@id/tvNombreProducto"
+            app:layout_constraintStart_toStartOf="@id/tvNombreProducto"
+            app:layout_constraintEnd_toEndOf="@id/tvNombreProducto"/>
 
         <TextView
             android:id="@+id/tvPrecio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
             tools:text="tvPrecio"
-            android:layout_margin="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@id/tvNombreProducto"
+            app:layout_constraintTop_toBottomOf="@id/tvSupermercado"
+            app:layout_constraintBottom_toBottomOf="@id/ivFotoProducto"/>
 
         <ImageButton
             android:id="@+id/ibBorrarProducto"
-            android:contentDescription="Eliminar producto"
-            android:maxWidth="30dp"
-            android:maxHeight="30dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:padding="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:src="@drawable/vector_delete"
-            />
+            android:contentDescription="Eliminar producto"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/red" />
 
         <ImageButton
             android:id="@+id/ibEditarProducto"
-            android:contentDescription="Editar producto"
-            android:maxWidth="30dp"
-            android:maxHeight="30dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:padding="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@+id/ibBorrarProducto"
-            app:layout_constraintTop_toTopOf="parent"
             android:src="@drawable/vector_edit"
-            />
+            android:contentDescription="Editar producto"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ibBorrarProducto"
+            android:layout_marginEnd="8dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

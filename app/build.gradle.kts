@@ -70,4 +70,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel)
 
+    implementation (libs.glide.transformations) // implementation ("jp.wasabeef:glide-transformations:4.3.0")
+    implementation (libs.gpuimage) // implementation ("jp.co.cyberagent.android:gpuimage:2.1.0")
+
 }
